@@ -1,3 +1,4 @@
+import { UpdateTaskStatusDto } from './dto/update-task-status-dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import {
   Body,
@@ -44,8 +45,10 @@ export class TasksController {
   @Patch('/:id/status')
   updateTaskStatus(
     @Param('id') id: string,
-    @Body('status') status: TaskStatus,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
   ): Task {
+    const { status } = updateTaskStatusDto;
+
     return this.tasksService.updateTaskStatus(id, status);
   }
 }
