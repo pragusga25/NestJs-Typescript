@@ -9,32 +9,8 @@ import { GetTasksFilterDto } from './dto/get-tasks-filter-dto';
 export class TasksService {
   constructor(private tasksRepository: TasksRepository) {}
 
-  async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
-    const { status, search } = filterDto;
-
-    const query = this.tasksRepository.createQueryBuilder('task');
-
-    if (status) {
-      query.andWhere('task.status = :status', { status });
-    }
-
-    if (search) {
-      query.andWhere(
-        'task.title LIKE :search OR task.description LIKE :search',
-        { search: `%${search}%` },
-      );
-    }
-
-    if (search && status) {
-      query.andWhere(
-        '(task.title LIKE :search OR task.description LIKE :search) AND task.status = :status',
-        { search: `%${search}%`, status },
-      );
-    }
-
-    const tasks = await query.getMany();
-
-    return tasks;
+  getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    return this.tasksRepository.getTasks(filterDto);
   }
 
   async getTaskById(id: string): Promise<Task> {
@@ -45,18 +21,8 @@ export class TasksService {
     return found;
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    const { title, description } = createTaskDto;
-
-    const task = this.tasksRepository.create({
-      title,
-      description,
-      status: TaskStatus.OPEN,
-    });
-
-    await this.tasksRepository.save(task);
-
-    return task;
+  createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.tasksRepository.createTask(createTaskDto);
   }
 
   async deleteTask(id: string): Promise<void> {
